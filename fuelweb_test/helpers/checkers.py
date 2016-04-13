@@ -1206,3 +1206,18 @@ def check_update_network_data_over_cli(remote, cluster_id, path):
     result = remote.execute(cmd)
     assert_equal(result['exit_code'], 0,
                  'Failed to upload network data {0}'.format(result))
+
+def check_plugin_path_env(var_name, plugin_path):
+    assert_true(
+        plugin_path,
+        '{var_name:s} variable is not set or set incorrectly: '
+        '{plugin_path!r}'.format(
+            var_name=var_name,
+            plugin_path=plugin_path)
+    )
+    assert_true(
+        os.path.exists(plugin_path),
+        'File {plugin_path:s} (variable: {var_name:s}) does not exists!'
+        ''.format(plugin_path=plugin_path, var_name=var_name)
+    )
+

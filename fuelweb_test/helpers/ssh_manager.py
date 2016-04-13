@@ -298,3 +298,7 @@ class SSHManager(object):
                                  "uploading skipped".format(condition,
                                                             local_path))
         return files_count
+
+    def execute_async_on_remote(self, ip, cmd, port=22):
+        remote = self._get_remote(ip=ip, port=port)
+        return remote.execute_async(cmd)

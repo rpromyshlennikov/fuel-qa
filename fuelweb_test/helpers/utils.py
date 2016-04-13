@@ -856,3 +856,37 @@ def erase_data_from_hdd(remote,
 
     for cmd in commands:
         run_on_remote(remote, cmd)
+
+@logwrap
+def upload_tarball(ip, tar_path, tar_target):
+    # Moved from checkers.py for improvement of code
+    asserts.assert_true(tar_path, "Source path for uploading 'tar_path' is empty, "
+                "please check test settings!")
+    if os.path.splitext(tar_path)[1] not in [".tar", ".lrz", ".fp", ".rpm"]:
+        raise Exception("Wrong archive type!")
+    try:
+        logger.info("Start to upload tar file")
+        SSHManager().upload_to_remote(
+            ip=ip,
+            source=tar_path,
+            target=tar_target
+        )
+        logger.info('File {} was uploaded on master'.format(tar_path))
+    except Exception:
+        logger.error('Failed to upload file')
+        logger.error(traceback.format_exc())
+
+
+@logwrap
+def install_plugin_check_code(ip, plugin, exit_code=0):
+    # Moved from checkers.py for improvement of code
+    cmd = "cd /var && fuel plugins --install {0} ".format(plugin)
+    chan, _, stderr, _ = SSHManager().execute_async_on_remote(
+        ip=ip,
+        cmd=cmd
+    )
+    logger.debug('Try to read status code from chain...')
+    asserts.assert_equal(
+        chan.recv_exit_status(), exit_code,
+        'Install script fails with next message {0}'.format(''.join(stderr)))
+
